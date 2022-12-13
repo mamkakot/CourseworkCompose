@@ -13,7 +13,7 @@ interface CleaningAppApiService {
     suspend fun getRooms(): Response<Rooms>
 
     @GET("chores/")
-    suspend fun getRoomsChores(@Query("room") roomId: Int): Chores
+    suspend fun getRoomsChores(@Query("room") roomId: Int): Response<Chores>
 
     @POST("auth/token/login/")
     suspend fun signInUser(@Body body: RequestBody): Token

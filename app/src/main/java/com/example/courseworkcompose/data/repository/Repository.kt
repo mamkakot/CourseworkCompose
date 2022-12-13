@@ -15,7 +15,7 @@ class Repository {
         return RetrofitInstance.apiService.getRooms()
     }
 
-    suspend fun getRoomsChores(roomId: Int): Chores {
+    suspend fun getRoomsChores(roomId: Int): Response<Chores> {
         return RetrofitInstance.apiService.getRoomsChores(roomId)
     }
 
