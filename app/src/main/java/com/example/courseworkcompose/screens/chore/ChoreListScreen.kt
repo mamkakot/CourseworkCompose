@@ -1,9 +1,13 @@
 package com.example.courseworkcompose.screens.chore
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
@@ -15,50 +19,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavController
 import com.example.courseworkcompose.TAG
 import com.example.courseworkcompose.models.chore.ChoreItem
+import com.example.courseworkcompose.screens.room.RoomView
 import com.example.courseworkcompose.ui.theme.CourseworkComposeTheme
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
-@Preview(showBackground = true)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DefaultPreview() {
-    CourseworkComposeTheme {
-        ChoreCard(
-            ChoreItem(
-                id = 3,
-                name = "Chore1",
-                condition = "Bad",
-                effort = "Hard",
-                room = 1,
-                period = "Once a week",
-                status = true,
-                date = "12/22/2022"
-            )
-        )
-    }
-}
-
-@Composable
-fun ChoreList(owner: ViewModelStoreOwner) {
-    val viewModel = ViewModelProvider(owner)[ChoreViewModel::class.java]
-    val rList by remember { viewModel.choreList }
-    Column() {
-        rList.forEach {
-            ChoreCard(chore = it)
+fun ChoreListScreen(
+    viewModel: ChoreViewModel,
+    roomName: String,
+    roomId: Int,
+    navController: NavController,
+) {
+    viewModel.getChores(roomId)
+    val choreList by remember { viewModel.choreList }
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        itemsIndexed(choreList) { _, item ->
+            ChoreCard(chore = item, navController = navController)
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChoreCard(chore: ChoreItem) {
+fun ChoreCard(chore: ChoreItem, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .clickable { onChoreClick(chore) },
+            .clickable {
+                navController.navigate("chore_detail_screen/${chore.id}/")
+            },
         shape = RoundedCornerShape(10.dp),
         elevation = 12.dp
     ) {
@@ -77,6 +75,10 @@ fun ChoreCard(chore: ChoreItem) {
                 Column(modifier = Modifier.fillMaxWidth(0.5f)) {
                     Text(text = chore.name)
                     Text(text = "7 задач")
+                    val zdt: ZonedDateTime = ZonedDateTime.parse(chore.date)
+                    val timeLastCleaned: String =
+                        zdt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm"))
+                    Text(text = "Прошлая уборка: $timeLastCleaned")
                 }
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
                     Checkbox(modifier = Modifier.padding(horizontal = 7.dp),
@@ -85,14 +87,6 @@ fun ChoreCard(chore: ChoreItem) {
                             Log.i("sss", "changed")
                         })
                 }
-
-//                LinearProgressIndicator(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(horizontal = 7.dp),
-//                    progress = room.sum_status / 100f,
-//                    color = MaterialTheme.colors.primary
-//                )
             }
         }
     }

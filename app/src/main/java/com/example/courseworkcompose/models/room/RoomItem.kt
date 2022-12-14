@@ -4,5 +4,6 @@ data class RoomItem(
     val id: Int,
     val name: String,
     val sum_status: Int,
-    val color: String
+    val color: String,
+    val count_chores: Int,
 )

@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.LinearProgressIndicator
@@ -16,30 +18,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavController
 import com.example.courseworkcompose.TAG
 import com.example.courseworkcompose.models.room.RoomItem
+import com.example.courseworkcompose.screens.chore.DifficultyDropDown
 
 
 @Composable
-fun RoomList(owner: ViewModelStoreOwner) {
-    val viewModel = ViewModelProvider(owner)[RoomViewModel::class.java]
+fun RoomListScreen(viewModel: RoomViewModel, navController: NavController) {
     val rList by remember { viewModel.roomList }
-    Column() {
-        rList.forEach {
-            RoomView(room = it)
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        itemsIndexed(rList) { _, item ->
+            RoomView(room = item, navController = navController)
         }
     }
 }
 
 @Composable
-fun RoomView(room: RoomItem) {
+fun RoomView(room: RoomItem, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .clickable { onRoomClick(room) },
+            .clickable {
+                Log.d(TAG, room.id.toString())
+                navController.navigate("rooms_chores/${room.name}/${room.id}/")
+            },
         shape = RoundedCornerShape(10.dp),
         elevation = 12.dp
     ) {
@@ -58,7 +65,18 @@ fun RoomView(room: RoomItem) {
                     })
                 Column(modifier = Modifier.fillMaxWidth(0.5f)) {
                     Text(text = room.name)
-                    Text(text = "7 задач")
+                    // TODO: переделать на mutableStateOf
+                    var countChoresText: String = when (room.count_chores.toString().last()) {
+                        '1' -> "${room.count_chores} задача"
+                        '2' -> "${room.count_chores} задачи"
+                        '3' -> "${room.count_chores} задачи"
+                        '4' -> "${room.count_chores} задачи"
+                        else -> "${room.count_chores} задач"
+                    }
+                    if (room.count_chores == 0) {
+                        countChoresText = "Нет задач"
+                    }
+                    Text(text = countChoresText)
                 }
                 LinearProgressIndicator(
                     modifier = Modifier
@@ -70,8 +88,4 @@ fun RoomView(room: RoomItem) {
             }
         }
     }
-}
-
-fun onRoomClick(room: RoomItem) {
-    Log.d(TAG, room.id.toString())
 }
