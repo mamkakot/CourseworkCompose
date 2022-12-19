@@ -2,7 +2,6 @@ package com.example.courseworkcompose.data.repository
 
 import android.util.Log
 import com.example.courseworkcompose.data.api.CleaningAppApiService
-import com.example.courseworkcompose.data.api.RetrofitInstance
 import com.example.courseworkcompose.models.chore.ChoreItem
 import com.example.courseworkcompose.models.chore.Chores
 import com.example.courseworkcompose.models.room.Rooms

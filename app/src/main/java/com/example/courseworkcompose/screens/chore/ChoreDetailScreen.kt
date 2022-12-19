@@ -8,20 +8,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.courseworkcompose.R
 import com.example.courseworkcompose.data.icons.CustomIcons
-import com.example.courseworkcompose.screens.room.RoomViewModel
 import com.example.courseworkcompose.ui.theme.DropDownColor
 
 
@@ -29,13 +32,14 @@ import com.example.courseworkcompose.ui.theme.DropDownColor
 fun DropDownMenu(
     requestToOpen: Boolean = false,
     list: List<String>,
+    width: Dp,
     request: (Boolean) -> Unit,
     selectedString: (String) -> Unit
 ) {
     Column(horizontalAlignment = Alignment.Start) {
         DropdownMenu(
             modifier = Modifier
-                .fillMaxWidth(0.8f)
+                .width(width)
                 .padding(horizontal = 22.dp),
             expanded = requestToOpen,
             onDismissRequest = { request(false) },
@@ -69,6 +73,7 @@ fun DropDownElement(
     val userSelectedString: (String) -> Unit = {
         text.value = it
     }
+    val textFieldSize = remember { mutableStateOf(Size.Zero) }
 
     Box(
         modifier = Modifier
@@ -80,6 +85,9 @@ fun DropDownElement(
                     value = text.value,
                     onValueChange = { text.value = it },
                     modifier = Modifier
+                        .onGloballyPositioned { coordinates ->
+                            textFieldSize.value = coordinates.size.toSize()
+                        }
                         .fillMaxSize(),
                     textStyle = MaterialTheme.typography.body2,
                     decorationBox = {
@@ -106,6 +114,7 @@ fun DropDownElement(
             DropDownMenu(
                 requestToOpen = isOpen.value,
                 list = itemList,
+                width = with(LocalDensity.current) { textFieldSize.value.width.toDp() },
                 openCloseOfDropDownList,
                 userSelectedString
             )
@@ -139,7 +148,6 @@ fun FrequencyDropDown() {
 
 @Composable
 fun RoomDropDown(roomNames: List<String>) {
-//    roomViewModel.getRooms()
     Log.i("sas23", roomNames.toString())
     DropDownElement(itemList = roomNames)
 }
