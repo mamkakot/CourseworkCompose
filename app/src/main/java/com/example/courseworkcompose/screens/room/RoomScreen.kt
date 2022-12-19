@@ -7,38 +7,41 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavController
+import com.example.courseworkcompose.R
 import com.example.courseworkcompose.TAG
 import com.example.courseworkcompose.models.room.RoomItem
 import com.example.courseworkcompose.screens.chore.DifficultyDropDown
 
 
+// TODO: сделать изменение порядка перетаскиванием
 @Composable
-fun RoomListScreen(viewModel: RoomViewModel, navController: NavController) {
-    val rList by remember { viewModel.roomList }
+fun RoomListScreen(navController: NavController, roomViewModel: RoomViewModel = hiltViewModel()) {
+    roomViewModel.getRooms()
+    val roomList by remember { roomViewModel.roomList }
+    val roomNames = roomList.map { it.name }
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(rList) { _, item ->
-            RoomView(room = item, navController = navController)
+        itemsIndexed(roomList) { _, item ->
+            RoomView(room = item, navController = navController, roomNames)
         }
     }
 }
 
 @Composable
-fun RoomView(room: RoomItem, navController: NavController) {
+fun RoomView(room: RoomItem, navController: NavController, roomNames: List<String>) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -48,7 +51,7 @@ fun RoomView(room: RoomItem, navController: NavController) {
                 navController.navigate("rooms_chores/${room.name}/${room.id}/")
             },
         shape = RoundedCornerShape(10.dp),
-        elevation = 12.dp
+        elevation = 8.dp
     ) {
         Box {
             Row(
@@ -59,12 +62,12 @@ fun RoomView(room: RoomItem, navController: NavController) {
             ) {
                 Canvas(modifier = Modifier
                     .padding(end = 15.dp)
-                    .size(10.dp),
+                    .size(12.dp),
                     onDraw = {
                         drawCircle(color = Color.Cyan)//Color(room.color.toColorInt()))
                     })
-                Column(modifier = Modifier.fillMaxWidth(0.5f)) {
-                    Text(text = room.name)
+                Column(modifier = Modifier.fillMaxWidth(0.7f)) {
+                    Text(text = room.name, style = MaterialTheme.typography.h2)
                     // TODO: переделать на mutableStateOf
                     var countChoresText: String = when (room.count_chores.toString().last()) {
                         '1' -> "${room.count_chores} задача"
@@ -74,9 +77,9 @@ fun RoomView(room: RoomItem, navController: NavController) {
                         else -> "${room.count_chores} задач"
                     }
                     if (room.count_chores == 0) {
-                        countChoresText = "Нет задач"
+                        countChoresText = stringResource(R.string.no_chores)
                     }
-                    Text(text = countChoresText)
+                    Text(text = countChoresText, style = MaterialTheme.typography.body1)
                 }
                 LinearProgressIndicator(
                     modifier = Modifier

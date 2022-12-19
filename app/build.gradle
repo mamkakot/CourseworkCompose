@@ -1,7 +1,12 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+//    id 'dagger.hilt.android.plugin'
 }
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.dagger.hilt.android'
 
 android {
     namespace 'com.example.courseworkcompose'
@@ -47,7 +52,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
     implementation 'androidx.activity:activity-compose:1.6.1'
@@ -83,5 +87,18 @@ dependencies {
     def nav_version = "2.5.3"
 
     implementation "androidx.navigation:navigation-compose:$nav_version"
+    //Dagger - Hilt
+    implementation "com.google.dagger:hilt-android:2.44.2"
+    kapt "androidx.hilt:hilt-compiler:1.0.0"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.1.0-alpha01'
 
+    kapt 'com.google.dagger:hilt-compiler:2.44.2'
+
+    // For instrumentation tests
+    androidTestImplementation  'com.google.dagger:hilt-android-testing:2.44.2'
+    kaptAndroidTest 'com.google.dagger:hilt-compiler:2.44.2'
+
+    // For local unit tests
+    testImplementation 'com.google.dagger:hilt-android-testing:2.44.2'
+    kaptTest 'com.google.dagger:hilt-compiler:2.44.2'
 }

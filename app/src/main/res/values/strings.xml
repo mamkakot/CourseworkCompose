@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Coursework Compose</string>
+    <string name="no_chores">No chores</string>
+    <string name="last_cleanup">Last cleanup</string>
+    <string-array name="frequency_list">
+        <item>days</item>
+        <item>weeks</item>
+        <item>months</item>
+        <item>years</item>
+    </string-array>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.courseworkcompose.screens.room
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,20 +11,28 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.mutableStateOf
+import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Response
+import javax.inject.Inject
 
-class RoomViewModel : ViewModel() {
-    val rep = Repository()
+@HiltViewModel
+class RoomViewModel @Inject constructor(val rep: Repository) : ViewModel() {
     var roomList = mutableStateOf<List<RoomItem>>(listOf())
-
-    init {
-        getRooms()
-    }
+//    var roomNames= mutableStateOf<List<String>>(listOf())
 
     fun getRooms() {
         viewModelScope.launch {
             val result = rep.getRooms()
+            Log.d("res:", result.body().toString())
             result.body()?.let { roomList.value = it }
         }
     }
+
+//    fun getRoomNames() {
+//        viewModelScope.launch {
+//            val result = rep.getRooms()
+//            Log.d("res:", result.body().toString())
+//            result.body()?.let { rooms -> roomNames.value = rooms.map { it.name } }
+//        }
+//    }
 }

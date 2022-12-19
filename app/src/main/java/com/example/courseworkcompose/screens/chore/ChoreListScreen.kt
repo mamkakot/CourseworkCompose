@@ -18,14 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.courseworkcompose.R
 import com.example.courseworkcompose.TAG
 import com.example.courseworkcompose.models.chore.ChoreItem
-import com.example.courseworkcompose.screens.room.RoomView
-import com.example.courseworkcompose.ui.theme.CourseworkComposeTheme
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -33,12 +32,12 @@ import java.util.*
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChoreListScreen(
-    viewModel: ChoreViewModel,
     roomName: String,
     roomId: Int,
     navController: NavController,
+    viewModel: ChoreViewModel = hiltViewModel()
 ) {
-    viewModel.getChores(roomId)
+    viewModel.getRoomsChores(roomId)
     val choreList by remember { viewModel.choreList }
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         itemsIndexed(choreList) { _, item ->
@@ -78,7 +77,10 @@ fun ChoreCard(chore: ChoreItem, navController: NavController) {
                     val zdt: ZonedDateTime = ZonedDateTime.parse(chore.date)
                     val timeLastCleaned: String =
                         zdt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm"))
-                    Text(text = "Прошлая уборка: $timeLastCleaned")
+                    Text(text = buildString {
+                        append(stringResource(R.string.last_cleanup))
+                        append(timeLastCleaned)
+                    })
                 }
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
                     Checkbox(modifier = Modifier.padding(horizontal = 7.dp),

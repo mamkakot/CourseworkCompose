@@ -1,26 +1,28 @@
 package com.example.courseworkcompose.screens.chore
 
-import android.graphics.drawable.Icon
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDropDown
-import androidx.compose.material.icons.rounded.List
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.courseworkcompose.R
-import com.example.courseworkcompose.models.chore.ChoreItem
+import com.example.courseworkcompose.data.icons.CustomIcons
+import com.example.courseworkcompose.screens.room.RoomViewModel
+import com.example.courseworkcompose.ui.theme.DropDownColor
 
 
 @Composable
@@ -32,7 +34,9 @@ fun DropDownMenu(
 ) {
     Column(horizontalAlignment = Alignment.Start) {
         DropdownMenu(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(horizontal = 22.dp),
             expanded = requestToOpen,
             onDismissRequest = { request(false) },
         ) {
@@ -55,7 +59,7 @@ fun DropDownMenu(
 @Composable
 fun DropDownElement(
     itemList: List<String>,
-    icon: @Composable (() -> Unit) = { Icon(Icons.Rounded.ArrowDropDown, null) }
+    icon: ImageVector = ImageVector.vectorResource(id = CustomIcons.ArrowDownIcon)
 ) {
     val text = remember { mutableStateOf(itemList[0]) }
     val isOpen = remember { mutableStateOf(false) }
@@ -65,20 +69,39 @@ fun DropDownElement(
     val userSelectedString: (String) -> Unit = {
         text.value = it
     }
-    Box {
+
+    Box(
+        modifier = Modifier
+            .height(32.dp)
+    ) {
         Column {
             Row {
-                OutlinedTextField(
-                    trailingIcon = icon,
+                BasicTextField(
                     value = text.value,
                     onValueChange = { text.value = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = TextStyle(),
-                )
-//                Icon(
-//                    imageVector = Icons.Rounded.List,
-//                    contentDescription = "ses"
-//                )
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    textStyle = MaterialTheme.typography.body2,
+                    decorationBox = {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(DropDownColor, RoundedCornerShape(5.dp))
+                                .padding(horizontal = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = text.value,
+                                modifier = Modifier.fillMaxWidth(0.8f),
+                                style = MaterialTheme.typography.body2
+                            )
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null
+                            )
+                        }
+                    })
             }
             DropDownMenu(
                 requestToOpen = isOpen.value,
@@ -86,14 +109,11 @@ fun DropDownElement(
                 openCloseOfDropDownList,
                 userSelectedString
             )
-
-
         }
         Spacer(
             modifier = Modifier
                 .matchParentSize()
                 .background(Color.Transparent)
-//                .padding(10.dp)
                 .clickable(
                     onClick = { isOpen.value = true }
                 )
@@ -113,22 +133,37 @@ fun DifficultyDropDown() {
 
 @Composable
 fun FrequencyDropDown() {
-    val frequencyList = listOf(
-        "Once a day",
-        "Once a week",
-        "Once a month",
-        "Once a year",
-        "Once",
-    )
+    val frequencyList: List<String> = stringArrayResource(id = R.array.frequency_list).toList()
     DropDownElement(itemList = frequencyList)
 }
 
 @Composable
-fun ChoreDetailScreen(choreItem: ChoreItem) {
-    Column {
-        Text(text = "Difficulty")
+fun RoomDropDown(roomNames: List<String>) {
+//    roomViewModel.getRooms()
+    Log.i("sas23", roomNames.toString())
+    DropDownElement(itemList = roomNames)
+}
+
+@Composable
+fun ChoreDetailScreen(
+    choreId: Int,
+    roomNames: List<String>,
+    viewModel: ChoreDetailsViewModel = hiltViewModel(),
+) {
+    viewModel.getChore(choreId)
+    val chore = remember { viewModel.chore }
+
+    Column(modifier = Modifier.padding(horizontal = 22.dp)) {
+        Text(text = "Name", style = MaterialTheme.typography.h2)
+        Spacer(modifier = Modifier.height(7.dp))
         DifficultyDropDown()
-        Text(text = "Frequency")
+        Spacer(modifier = Modifier.height(14.dp))
+        Text(text = "Room", style = MaterialTheme.typography.h2)
+        Spacer(modifier = Modifier.height(7.dp))
+        RoomDropDown(roomNames)
+        Spacer(modifier = Modifier.height(14.dp))
+        Text(text = "Frequency", style = MaterialTheme.typography.h2)
+        Spacer(modifier = Modifier.height(7.dp))
         FrequencyDropDown()
     }
 }

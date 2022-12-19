@@ -1,5 +1,6 @@
 package com.example.courseworkcompose.data.api
 
+import com.example.courseworkcompose.models.chore.ChoreItem
 import com.example.courseworkcompose.models.chore.Chores
 import com.example.courseworkcompose.models.room.Rooms
 import com.example.courseworkcompose.models.user.Token
@@ -20,4 +21,7 @@ interface CleaningAppApiService {
 
     @POST("auth/users/")
     suspend fun registerUser(@Body body: RequestBody): User
+
+    @GET("chores/{chore}")
+    suspend fun getChore(@Path("chore") choreId: Int): Response<ChoreItem>
 }
