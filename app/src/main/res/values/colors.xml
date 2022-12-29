@@ -7,5 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary">#7948CF</color>
+    <color name="priority_first">#FFFF7A7A</color>
+    <color name="priority_second">#FFFF9C09</color>
+    <color name="priority_third">#FF6667AB</color>
+    <color name="priority_forth">#FF8B8B9E</color>
+    <color name="priority_first_back">#33FF7A7A</color>
+    <color name="priority_second_back">#33FF9C09</color>
+    <color name="priority_third_back">#336667AB</color>
+    <color name="priority_forth_back">#338B8B9E</color>
 </resources>

@@ -69,13 +69,14 @@ fun RoomView(room: RoomItem, navController: NavController, roomNames: List<Strin
                 Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                     Text(text = room.name, style = MaterialTheme.typography.h2)
                     // TODO: переделать на mutableStateOf
-                    var countChoresText: String = when (room.count_chores.toString().last()) {
-                        '1' -> "${room.count_chores} задача"
-                        '2' -> "${room.count_chores} задачи"
-                        '3' -> "${room.count_chores} задачи"
-                        '4' -> "${room.count_chores} задачи"
-                        else -> "${room.count_chores} задач"
-                    }
+                    var countChoresText: String = "${room.count_chores} chores"
+//                    var countChoresText: String = when (room.count_chores.toString().last()) {
+//                        '1' -> "${room.count_chores} задача"
+//                        '2' -> "${room.count_chores} задачи"
+//                        '3' -> "${room.count_chores} задачи"
+//                        '4' -> "${room.count_chores} задачи"
+//                        else -> "${room.count_chores} задач"
+//                    }
                     if (room.count_chores == 0) {
                         countChoresText = stringResource(R.string.no_chores)
                     }

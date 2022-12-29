@@ -1,13 +1,20 @@
 package com.example.courseworkcompose.screens.chore
 
 import android.util.Log
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
+import androidx.compose.material.TextFieldDefaults.indicatorLine
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -19,14 +26,19 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.courseworkcompose.R
 import com.example.courseworkcompose.data.icons.CustomIcons
 import com.example.courseworkcompose.ui.theme.DropDownColor
-
 
 @Composable
 fun DropDownMenu(
@@ -59,7 +71,6 @@ fun DropDownMenu(
     }
 }
 
-//@Preview(showBackground = true)
 @Composable
 fun DropDownElement(
     itemList: List<String>,
@@ -152,6 +163,146 @@ fun RoomDropDown(roomNames: List<String>) {
     DropDownElement(itemList = roomNames)
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun TB(modifier: Modifier) {
+    val text = remember {
+        mutableStateOf("")
+    }
+    val interactionSource = remember { MutableInteractionSource() }
+    BasicTextField(
+        value = text.value,
+        onValueChange = { if (it.length < 5) text.value = it },
+        modifier = modifier
+            .height(32.dp)
+            .indicatorLine(
+                enabled = true, isError = false, colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.White,
+                    focusedIndicatorColor = Color.Gray
+                ), interactionSource = interactionSource
+            ),
+        singleLine = true,
+        maxLines = 1,
+        decorationBox = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Transparent, RoundedCornerShape(5.dp))
+                    .padding(horizontal = 23.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = text.value,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.body1,
+                    maxLines = 1,
+                )
+            }
+        },
+    )
+}
+
+@Composable
+fun DaysTextField(modifier: Modifier, value: String, onValueChange: (String) -> Unit) {
+    val text = remember { mutableStateOf(value) }
+    val textFieldSize = remember { mutableStateOf(Size.Zero) }
+    BasicTextField(
+        value = text.value,
+        onValueChange = { text.value = it },
+        modifier = Modifier
+            .onGloballyPositioned { coordinates ->
+                textFieldSize.value = coordinates.size.toSize()
+            }
+            .fillMaxSize(),
+        textStyle = MaterialTheme.typography.body2,
+        decorationBox = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(DropDownColor, RoundedCornerShape(5.dp))
+                    .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = text.value,
+                    modifier = Modifier.fillMaxWidth(0.8f),
+                    style = MaterialTheme.typography.body2
+                )
+            }
+        })
+}
+
+enum class Priority(val value: Color) {
+    PriorityFirst(Color(R.color.priority_first)),
+    PrioritySecond(Color(R.color.priority_second)),
+    PriorityThird(Color(R.color.priority_third)),
+    PriorityForth(Color(R.color.priority_forth)),
+    PriorityFirstBack(Color(R.color.priority_first_back)),
+    PrioritySecondBack(Color(R.color.priority_second_back)),
+    PriorityThirdBack(Color(R.color.priority_third_back)),
+    PriorityForthBack(Color(R.color.priority_forth_back)),
+}
+
+fun getAllPriorities(): List<Priority> {
+    return listOf(
+        Priority.PriorityFirst,
+        Priority.PrioritySecond,
+        Priority.PriorityThird,
+        Priority.PriorityForth,
+    )
+}
+
+fun getPriority(value: Color): Priority? {
+    val map = Priority.values().associateBy(Priority::value)
+    return map[value]
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Chip(
+    color: Color = Color(R.color.priority_first),
+    backgroundColor: Color = Color(R.color.priority_first_back),
+    isSelected: Boolean = false,
+    onSelectionChanged: (Color) -> Unit = {},
+) {
+    Canvas(modifier = Modifier
+        .padding(end = 10.dp)
+        .size(16.dp)
+        .toggleable(value = isSelected,
+            onValueChange = {
+                onSelectionChanged(color)
+            }),
+        onDraw = {
+            drawCircle(color = if (isSelected) color else backgroundColor)
+        })
+}
+
+@Composable
+fun PriorityChips(
+    priorities: List<Priority> = getAllPriorities(),
+    selectedPriority: Priority? = null,
+    onSelectedChanged: (Color) -> Unit = {},
+) {
+    Column(modifier = Modifier.padding(8.dp)) {
+        LazyRow {
+            items(priorities) {
+                Chip(
+                    color = it.value,
+                    isSelected = selectedPriority == it,
+                    onSelectionChanged = {
+                        onSelectedChanged(it)
+                    },
+                )
+            }
+        }
+    }
+}
+
+val selectedPriority: MutableState<Priority?> = mutableStateOf(null)
+
 @Composable
 fun ChoreDetailScreen(
     choreId: Int,
@@ -160,6 +311,7 @@ fun ChoreDetailScreen(
 ) {
     viewModel.getChore(choreId)
     val chore = remember { viewModel.chore }
+    val daysCount = remember { mutableStateOf("2") }
 
     Column(modifier = Modifier.padding(horizontal = 22.dp)) {
         Text(text = "Name", style = MaterialTheme.typography.h2)
@@ -172,6 +324,12 @@ fun ChoreDetailScreen(
         Spacer(modifier = Modifier.height(14.dp))
         Text(text = "Frequency", style = MaterialTheme.typography.h2)
         Spacer(modifier = Modifier.height(7.dp))
-        FrequencyDropDown()
+        Row(modifier = Modifier.padding(horizontal = 12.dp)) {
+            Text(text = "Every", style = MaterialTheme.typography.body1)
+            Spacer(modifier = Modifier.width(23.dp))
+            TB(modifier = Modifier.width(88.dp))
+            Spacer(modifier = Modifier.width(23.dp))
+            FrequencyDropDown()
+        }
     }
 }

@@ -14,6 +14,7 @@ import javax.inject.Inject
 class RoomViewModel @Inject constructor(val rep: Repository) : ViewModel() {
     var roomList = mutableStateOf<List<RoomItem>>(listOf())
 
+
     fun getRooms() {
         viewModelScope.launch {
             val result = rep.getRooms()
