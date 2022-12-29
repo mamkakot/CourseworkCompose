@@ -12,10 +12,12 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
@@ -24,10 +26,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.courseworkcompose.data.StoreToken
 import com.example.courseworkcompose.screens.chore.ChoreDetailScreen
 import com.example.courseworkcompose.screens.chore.ChoreListScreen
 import com.example.courseworkcompose.screens.room.RoomListScreen
 import com.example.courseworkcompose.screens.room.RoomViewModel
+import com.example.courseworkcompose.screens.user.UserLoginScreen
+import com.example.courseworkcompose.screens.user.UserRegistrationScreen
 import com.example.courseworkcompose.ui.theme.BottomAppBarColor
 import com.example.courseworkcompose.ui.theme.CourseworkComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,6 +52,7 @@ class MainActivity : ComponentActivity() {
                 val roomViewModel = ViewModelProvider(this@MainActivity)[RoomViewModel::class.java]
                 roomViewModel.getRooms()
                 val roomList by remember { roomViewModel.roomList }
+                val t = StoreToken(LocalContext.current).getToken.collectAsState(initial = "")
 
                 Scaffold(
                     topBar = {
@@ -74,9 +80,17 @@ class MainActivity : ComponentActivity() {
                     content = { padding ->
                         NavHost(
                             navController = navController,
-                            startDestination = "room_list_screen",
+                            startDestination = if (t.value == "") "user_register_screen" else "room_list_screen",
                             modifier = Modifier.padding(padding)
                         ) {
+                            composable("user_register_screen") {
+                                UserRegistrationScreen(navController)
+                            }
+
+                            composable("user_login_screen") {
+                                UserLoginScreen(navController)
+                            }
+
                             composable("room_list_screen") {
                                 RoomListScreen(navController)
                             }

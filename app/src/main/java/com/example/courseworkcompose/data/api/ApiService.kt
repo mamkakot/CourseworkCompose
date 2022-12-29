@@ -1,5 +1,6 @@
 package com.example.courseworkcompose.data.api
 
+import android.util.Log
 import com.example.courseworkcompose.models.chore.ChoreItem
 import com.example.courseworkcompose.models.chore.Chores
 import com.example.courseworkcompose.models.room.Rooms
@@ -17,10 +18,10 @@ interface CleaningAppApiService {
     suspend fun getRoomsChores(@Query("room") roomId: Int): Response<Chores>
 
     @POST("auth/token/login/")
-    suspend fun signInUser(@Body body: RequestBody): Token
+    suspend fun signInUser(@Body body: RequestBody): Response<Token>
 
     @POST("auth/users/")
-    suspend fun registerUser(@Body body: RequestBody): User
+    suspend fun registerUser(@Body body: RequestBody): Response<User>
 
     @GET("chores/{chore}")
     suspend fun getChore(@Path("chore") choreId: Int): Response<ChoreItem>

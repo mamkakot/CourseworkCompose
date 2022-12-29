@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.courseworkcompose.R
-import com.example.courseworkcompose.TAG
 import com.example.courseworkcompose.models.chore.ChoreItem
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -92,8 +91,4 @@ fun ChoreCard(chore: ChoreItem, navController: NavController) {
             }
         }
     }
-}
-
-fun onChoreClick(chore: ChoreItem) {
-    Log.d(TAG, chore.id.toString())
 }

@@ -29,7 +29,7 @@ class Repository @Inject constructor(private val cleaningAppApiService: Cleaning
         return cleaningAppApiService.getChore(choreId)
     }
 
-    suspend fun signInUser(username: String, password: String): Token {
+    suspend fun signInUser(username: String, password: String): Response<Token> {
         val signInRequestBody: RequestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("username", username)
@@ -38,7 +38,7 @@ class Repository @Inject constructor(private val cleaningAppApiService: Cleaning
         return cleaningAppApiService.signInUser(signInRequestBody)
     }
 
-    suspend fun registerUser(username: String, password: String, email: String): User {
+    suspend fun registerUser(username: String, password: String, email: String): Response<User> {
         val signUpRequestBody: RequestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("username", username)

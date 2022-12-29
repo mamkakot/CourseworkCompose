@@ -11,7 +11,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChoreDetailsViewModel @Inject constructor(val rep: Repository) : ViewModel() {
-    val chore = mutableStateOf(ChoreItem("", "", "", 1, "", "", 1, false))
+    val chore = mutableStateOf(
+        ChoreItem(
+            date = "",
+            effort = "",
+            id = 0,
+            name = "",
+            period = 2,
+            period_type = "",
+            room = 0,
+            slave = 0,
+            status = false
+        )
+    )
 
     fun getChore(choreId: Int) {
         viewModelScope.launch {
