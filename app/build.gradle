@@ -104,4 +104,7 @@ dependencies {
 
     // For data store
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+    // For calendar
+    implementation("com.himanshoe:kalendar:1.2.0")
 }

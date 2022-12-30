@@ -5,6 +5,7 @@ import android.media.session.MediaSession.Token
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,7 @@ class StoreToken(private val context: Context) {
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("UserToken")
         val tokenPref = stringPreferencesKey("token")
+        val userIdPref = intPreferencesKey("userId")
     }
 
     // to get the token
@@ -26,6 +28,17 @@ class StoreToken(private val context: Context) {
     suspend fun saveToken(token: String) {
         context.dataStore.edit { preferences ->
             preferences[tokenPref] = token
+        }
+    }
+
+    val getUserId: Flow<Int?> = context.dataStore.data
+        .map { preferences ->
+            preferences[userIdPref] ?: -1
+        }
+
+    suspend fun saveUserId(id: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[userIdPref] = id
         }
     }
 }

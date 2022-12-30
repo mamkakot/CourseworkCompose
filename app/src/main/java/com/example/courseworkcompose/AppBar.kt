@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.courseworkcompose.data.icons.CustomIcons
 import com.example.courseworkcompose.ui.theme.BottomAppBarColor
 import com.example.courseworkcompose.ui.theme.InactiveIconColor
@@ -74,23 +75,13 @@ fun AppBarTop(text: String, onNavigationIconClick: () -> Unit, isGotBack: Boolea
                     }
                 }
             }
-
-            //actions
-//            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-//                Row(
-//                    Modifier.fillMaxHeight(),
-//                    horizontalArrangement = Arrangement.End,
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    content = onNavigationIconClick()
-//                )
-//            }
         }
     }
 }
 
 
 @Composable
-fun AppBarBottom() {
+fun AppBarBottom(navController: NavController) {
     val cutCornerShape = CutCornerShape(50)
     val density = LocalDensity.current
     val shapeSize = density.run { 70.dp.toPx() }
@@ -106,7 +97,7 @@ fun AppBarBottom() {
         cutoutShape = CircleShape,
         contentPadding = PaddingValues(0.dp)
     ) {
-        val items = listOf("Home", "Calendar", "User", "Settings")
+        val items = listOf("room_list_screen", "calendar_screen", "User", "Settings")
         val icons = listOf(
             CustomIcons.HomeIcon,
             CustomIcons.CalendarIcon,
@@ -130,11 +121,13 @@ fun AppBarBottom() {
                             contentDescription = item
                         )
                     },
-//                    label = { Text(item) },
                     selected = selectedItem == index,
                     selectedContentColor = Color.White,
                     unselectedContentColor = InactiveIconColor,
-                    onClick = { selectedItem = index },
+                    onClick = {
+                        selectedItem = index
+                        navController.navigate(item)
+                    },
                 )
                 if (index == 1) {
                     Spacer(modifier = Modifier.width(50.dp))

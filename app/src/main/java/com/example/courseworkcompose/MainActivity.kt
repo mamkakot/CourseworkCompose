@@ -27,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.courseworkcompose.data.StoreToken
+import com.example.courseworkcompose.screens.calendar.CalendarScreen
 import com.example.courseworkcompose.screens.chore.ChoreDetailScreen
 import com.example.courseworkcompose.screens.chore.ChoreListScreen
 import com.example.courseworkcompose.screens.room.RoomListScreen
@@ -53,7 +54,7 @@ class MainActivity : ComponentActivity() {
                 roomViewModel.getRooms()
                 val roomList by remember { roomViewModel.roomList }
                 val t = StoreToken(LocalContext.current).getToken.collectAsState(initial = "")
-
+                val start = if (t.value != "") "room_list_screen" else "user_register_screen"
                 Scaffold(
                     topBar = {
                         AppBarTop(
@@ -63,7 +64,7 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     bottomBar = {
-                        AppBarBottom()
+                        AppBarBottom(navController)
                     },
 
                     floatingActionButton = {
@@ -80,9 +81,13 @@ class MainActivity : ComponentActivity() {
                     content = { padding ->
                         NavHost(
                             navController = navController,
-                            startDestination = if (t.value == "") "user_register_screen" else "room_list_screen",
+                            startDestination = start,
                             modifier = Modifier.padding(padding)
                         ) {
+                            composable("room_list_screen") {
+                                RoomListScreen(navController)
+                            }
+
                             composable("user_register_screen") {
                                 UserRegistrationScreen(navController)
                             }
@@ -91,8 +96,8 @@ class MainActivity : ComponentActivity() {
                                 UserLoginScreen(navController)
                             }
 
-                            composable("room_list_screen") {
-                                RoomListScreen(navController)
+                            composable("calendar_screen") {
+                                CalendarScreen()
                             }
 
                             composable(
