@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
             CourseworkComposeTheme {
                 val navController = rememberNavController()
                 val roomViewModel = ViewModelProvider(this@MainActivity)[RoomViewModel::class.java]
-                roomViewModel.getRooms()
+//                roomViewModel.getRooms()
                 val roomList by remember { roomViewModel.roomList }
                 val t = StoreToken(LocalContext.current).getToken.collectAsState(initial = "")
                 val start = if (t.value != "") "room_list_screen" else "user_register_screen"

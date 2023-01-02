@@ -8,7 +8,7 @@
     <string name="login_button_text">Log in</string>
     <string name="or_label">or</string>
     <string name="register_button_text">Register</string>
-    <string name="chores">\" chores\"</string>
+    <string name="chores"> chores</string>
     <string name="save_button_text">Save</string>
     <string-array name="frequency_list">
         <item>days</item>

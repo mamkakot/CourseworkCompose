@@ -8,11 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,9 +26,18 @@ import com.example.courseworkcompose.models.room.RoomItem
 
 // TODO: сделать изменение порядка перетаскиванием
 @Composable
-fun RoomListScreen(navController: NavController, setFabOnClick: (() -> Unit) -> Unit, roomViewModel: RoomViewModel = hiltViewModel()) {
-    roomViewModel.getRooms()
+fun RoomListScreen(
+    navController: NavController,
+    setFabOnClick: (() -> Unit) -> Unit,
+    roomViewModel: RoomViewModel = hiltViewModel()
+) {
+    println(roomViewModel.roomList.value)
+    if (roomViewModel.roomList.value.isEmpty()) {
+        roomViewModel.getRooms()
+    }
+
     val roomList by remember { roomViewModel.roomList }
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         itemsIndexed(roomList) { _, item ->
             RoomView(room = item, navController = navController)
@@ -41,6 +47,7 @@ fun RoomListScreen(navController: NavController, setFabOnClick: (() -> Unit) -> 
     LaunchedEffect(Unit) {
         setFabOnClick { println("room list view") }
     }
+
 }
 
 @Composable
