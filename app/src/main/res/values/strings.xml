@@ -2,6 +2,14 @@
     <string name="app_name">Coursework Compose</string>
     <string name="no_chores">No chores</string>
     <string name="last_cleanup">Last cleanup</string>
+    <string name="username_label">Username</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="login_button_text">Log in</string>
+    <string name="or_label">or</string>
+    <string name="register_button_text">Register</string>
+    <string name="chores">\" chores\"</string>
+    <string name="save_button_text">Save</string>
     <string-array name="frequency_list">
         <item>days</item>
         <item>weeks</item>

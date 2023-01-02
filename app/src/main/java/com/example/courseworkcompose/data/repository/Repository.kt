@@ -29,6 +29,35 @@ class Repository @Inject constructor(private val cleaningAppApiService: Cleaning
         return cleaningAppApiService.getChore(choreId)
     }
 
+    suspend fun postChore(chore: ChoreItem): Response<ChoreItem> {
+        val postChoreRequestBody: RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("name", chore.name)
+            .addFormDataPart("date", chore.date)
+            .addFormDataPart("period_type", chore.period_type)
+            .addFormDataPart("effort", chore.effort)
+            .addFormDataPart("status", chore.status.toString())
+            .addFormDataPart("room", chore.room.toString())
+            .addFormDataPart("slave", chore.slave.toString())
+            .build()
+        return cleaningAppApiService.postChore(postChoreRequestBody)
+    }
+
+    suspend fun updateChore(chore: ChoreItem): Response<ChoreItem> {
+        val updateChoreRequestBody: RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("id", chore.id.toString())
+            .addFormDataPart("name", chore.name)
+            .addFormDataPart("date", chore.date)
+            .addFormDataPart("period_type", chore.period_type)
+            .addFormDataPart("effort", chore.effort)
+            .addFormDataPart("status", chore.status.toString())
+            .addFormDataPart("room", chore.room.toString())
+            .addFormDataPart("slave", chore.slave.toString())
+            .build()
+        return cleaningAppApiService.updateChore(chore.id, updateChoreRequestBody)
+    }
+
     suspend fun signInUser(username: String, password: String): Response<Token> {
         val signInRequestBody: RequestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)

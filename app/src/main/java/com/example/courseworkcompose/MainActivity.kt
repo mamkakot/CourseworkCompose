@@ -11,10 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -55,6 +52,8 @@ class MainActivity : ComponentActivity() {
                 val roomList by remember { roomViewModel.roomList }
                 val t = StoreToken(LocalContext.current).getToken.collectAsState(initial = "")
                 val start = if (t.value != "") "room_list_screen" else "user_register_screen"
+                val (fabOnClick, setFabOnClick) = remember { mutableStateOf<(() -> Unit)?>(null) }
+
                 Scaffold(
                     topBar = {
                         AppBarTop(
@@ -69,7 +68,11 @@ class MainActivity : ComponentActivity() {
 
                     floatingActionButton = {
                         FloatingActionButton(
-                            onClick = { Log.i(TAG, "+") }, shape = CircleShape,
+                            onClick = {
+                                Log.i(TAG, navController.currentDestination.toString())
+                                fabOnClick?.invoke()
+                            },
+                            shape = CircleShape,
                             backgroundColor = BottomAppBarColor,
                             elevation = FloatingActionButtonDefaults.elevation(0.dp),
                         ) {
@@ -85,7 +88,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(padding)
                         ) {
                             composable("room_list_screen") {
-                                RoomListScreen(navController)
+                                RoomListScreen(navController, setFabOnClick = setFabOnClick)
                             }
 
                             composable("user_register_screen") {
@@ -121,7 +124,8 @@ class MainActivity : ComponentActivity() {
                                 ChoreListScreen(
                                     roomName = roomName?.lowercase(Locale.ROOT) ?: "",
                                     roomId = roomId!!,
-                                    navController = navController
+                                    navController = navController,
+                                    setFabOnClick = setFabOnClick
                                 )
                             }
 

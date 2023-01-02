@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -24,24 +25,26 @@ import androidx.navigation.NavController
 import com.example.courseworkcompose.R
 import com.example.courseworkcompose.TAG
 import com.example.courseworkcompose.models.room.RoomItem
-import com.example.courseworkcompose.screens.chore.DifficultyDropDown
 
 
 // TODO: сделать изменение порядка перетаскиванием
 @Composable
-fun RoomListScreen(navController: NavController, roomViewModel: RoomViewModel = hiltViewModel()) {
+fun RoomListScreen(navController: NavController, setFabOnClick: (() -> Unit) -> Unit, roomViewModel: RoomViewModel = hiltViewModel()) {
     roomViewModel.getRooms()
     val roomList by remember { roomViewModel.roomList }
-    val roomNames = roomList.map { it.name }
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         itemsIndexed(roomList) { _, item ->
-            RoomView(room = item, navController = navController, roomNames)
+            RoomView(room = item, navController = navController)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        setFabOnClick { println("room list view") }
     }
 }
 
 @Composable
-fun RoomView(room: RoomItem, navController: NavController, roomNames: List<String>) {
+fun RoomView(room: RoomItem, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,7 +72,10 @@ fun RoomView(room: RoomItem, navController: NavController, roomNames: List<Strin
                 Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                     Text(text = room.name, style = MaterialTheme.typography.h2)
                     // TODO: переделать на mutableStateOf
-                    var countChoresText: String = "${room.count_chores} chores"
+                    var countChoresText: String = buildString {
+                        append(room.count_chores)
+                        append(stringResource(R.string.chores))
+                    }
 //                    var countChoresText: String = when (room.count_chores.toString().last()) {
 //                        '1' -> "${room.count_chores} задача"
 //                        '2' -> "${room.count_chores} задачи"

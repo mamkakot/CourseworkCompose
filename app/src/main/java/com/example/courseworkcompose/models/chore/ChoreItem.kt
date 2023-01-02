@@ -1,13 +1,15 @@
 package com.example.courseworkcompose.models.chore
 
+import androidx.compose.runtime.saveable.mapSaver
+
 data class ChoreItem(
-    val date: String,
-    val effort: String,
+    var date: String,
+    var effort: String,
     val id: Int,
-    val name: String,
-    val period: Int,
-    val period_type: String,
-    val room: Int,
-    val slave: Int,
-    val status: Boolean
+    var name: String,
+    var period: Int?,
+    var period_type: String,
+    var room: Int,
+    var slave: Int,
+    var status: Boolean
 )

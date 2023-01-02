@@ -17,6 +17,12 @@ interface CleaningAppApiService {
     @GET("chores/")
     suspend fun getRoomsChores(@Query("room") roomId: Int): Response<Chores>
 
+    @POST("chores/")
+    suspend fun postChore(@Body body: RequestBody): Response<ChoreItem>
+
+    @PUT("chores/{choreId}/")
+    suspend fun updateChore(@Path("choreId") choreId: Int, @Body body: RequestBody): Response<ChoreItem>
+
     @POST("auth/token/login/")
     suspend fun signInUser(@Body body: RequestBody): Response<Token>
 

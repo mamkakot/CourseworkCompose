@@ -13,6 +13,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,9 +32,10 @@ import java.util.*
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChoreListScreen(
-    roomName: String,
     roomId: Int,
+    roomName: String,
     navController: NavController,
+    setFabOnClick: (() -> Unit) -> Unit,
     viewModel: ChoreViewModel = hiltViewModel()
 ) {
     viewModel.getRoomsChores(roomId)
@@ -42,6 +44,10 @@ fun ChoreListScreen(
         itemsIndexed(choreList) { _, item ->
             ChoreCard(chore = item, navController = navController)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        setFabOnClick { println("chore list view") }
     }
 }
 
