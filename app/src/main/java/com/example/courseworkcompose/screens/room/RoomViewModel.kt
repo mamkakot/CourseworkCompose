@@ -12,13 +12,26 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RoomViewModel @Inject constructor(val rep: Repository) : ViewModel() {
-    val roomList = mutableStateOf<List<RoomItem>>(listOf())
+    val roomList: MutableList<RoomItem> = mutableListOf()
+
+    init {
+        getRooms()
+    }
 
     fun getRooms() {
         viewModelScope.launch {
             val result = rep.getRooms()
             Log.d("res:", result.body().toString())
-            result.body()?.let { roomList.value = it }
+            roomList.removeAll(roomList)
+            result.body()?.let { roomList.addAll(it) }
+        }
+    }
+
+    fun createRoom(room: RoomItem) {
+        viewModelScope.launch {
+            val result = rep.createRoom(room).body()!!
+            roomList.add(result)
+            Log.d("res:", result.toString())
         }
     }
 }

@@ -11,11 +11,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.dataStore
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.courseworkcompose.R
-import com.example.courseworkcompose.data.StoreToken
-import kotlinx.coroutines.launch
 
 @Composable
 fun UserRegistrationScreen(

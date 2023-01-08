@@ -9,12 +9,14 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.TextFieldDefaults.indicatorLine
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -26,10 +28,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.courseworkcompose.R
 import com.example.courseworkcompose.data.icons.CustomIcons
 import com.example.courseworkcompose.models.chore.ChoreItem
+import com.example.courseworkcompose.screens.room.ThatWeirdLine
+import com.example.courseworkcompose.ui.theme.DarkVeryPeri
 import com.example.courseworkcompose.ui.theme.DropDownColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun DropDownMenu(
@@ -164,85 +171,87 @@ fun TB(modifier: Modifier, text: String, maxLength: Int, onValueChange: (String)
             .indicatorLine(
                 enabled = true, isError = false, colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.White,
-                    focusedIndicatorColor = Color.Gray
+                    focusedIndicatorColor = DarkVeryPeri,
+                    unfocusedIndicatorColor = DarkVeryPeri
                 ), interactionSource = interactionSource
             ),
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
         singleLine = true,
         maxLines = 1,
-        decorationBox = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Transparent, RoundedCornerShape(5.dp))
-                    .padding(horizontal = 23.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
+        decorationBox = { innerTextField ->
+            if (innerText.value.isEmpty())
                 Text(
-                    text = innerText.value,
+                    text = "Input name",
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.body1,
-                    maxLines = 1,
                 )
-            }
+            innerTextField()
         },
+        cursorBrush = SolidColor(DarkVeryPeri)
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ChoreDetailScreen(
-    choreId: Int,
+    choreItem: ChoreItem,
     roomNames: List<String>,
     viewModel: ChoreDetailsViewModel = hiltViewModel(),
+    setChore: (ChoreItem?) -> Unit,
+    sheetState: ModalBottomSheetState,
+    coroutineScope: CoroutineScope
 ) {
-    if (viewModel.chore.value == null)
-        viewModel.getChore(choreId)
+//    val (chore, choreSetter) = remember { choreItem }
 
-    val (chore, choreSetter) = remember { viewModel.chore }
-
-    if (chore != null) {
+    if (choreItem != null)
         Column(modifier = Modifier.padding(horizontal = 22.dp)) {
+            Spacer(modifier = Modifier.height(24.dp))
+            ThatWeirdLine()
+            Spacer(modifier = Modifier.height(10.dp))
             Text(text = "Name", style = MaterialTheme.typography.h2)
             Spacer(modifier = Modifier.height(7.dp))
-//            TB(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(horizontal = 12.dp), text = it.name,
-//                onValueChange = { chore.value!!.name = it },
-//                maxLength = 60
-//            )
-            TextField(
-                value = chore.name,
-                onValueChange = { choreSetter(chore.copy(name = it)) },
+            TB(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
+                    .padding(horizontal = 12.dp),
+                text = choreItem.name,
+                onValueChange = {
+//                    choreSetter(chore.copy(name = it))
+                    setChore.invoke(choreItem.copy(name = it))
+                },
+                maxLength = 60
             )
+//            TextField(
+//                value = chore.name,
+//                onValueChange = { choreSetter(chore.copy(name = it)) },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(horizontal = 12.dp)
+//            )
             Spacer(modifier = Modifier.height(14.dp))
             Text(text = "Room", style = MaterialTheme.typography.h2)
             Spacer(modifier = Modifier.height(7.dp))
-            RoomDropDown(roomNames, selectedIndex = chore.room)
+            RoomDropDown(roomNames, selectedIndex = choreItem.room)
             Spacer(modifier = Modifier.height(14.dp))
             Text(text = "Frequency", style = MaterialTheme.typography.h2)
             Spacer(modifier = Modifier.height(7.dp))
             Row(modifier = Modifier.padding(horizontal = 12.dp)) {
                 Text(text = "Every", style = MaterialTheme.typography.body1)
                 Spacer(modifier = Modifier.width(23.dp))
-//                TB(
-//                    modifier = Modifier.width(88.dp), text = it.period.toString(),
-//                    onValueChange = { chore.value!!.period = it.toIntOrNull() },
-//                    maxLength = 5
-//                )
-                TextField(
-                    value = if (chore.period != 0) chore.period.toString() else "",
-                    onValueChange = { choreSetter(chore.copy(period = if (it.toIntOrNull() == null) 0 else it.toInt())) },
+                TB(
+                    text = if (choreItem.period != null) choreItem.period.toString() else "",
+                    onValueChange = {
+//                        choreSetter(chore.copy(period = if (it.toIntOrNull() == null) null else it.toInt()))
+                        setChore.invoke(choreItem.copy(period = if (it.toIntOrNull() == null) null else it.toInt()))
+                    },
                     modifier = Modifier
                         .width(88.dp)
-                        .padding(horizontal = 12.dp)
+                        .padding(horizontal = 12.dp),
+                    maxLength = 5
                 )
                 Spacer(modifier = Modifier.width(23.dp))
-                FrequencyDropDown(selectedItem = chore.period_type)
+                FrequencyDropDown(selectedItem = choreItem.period_type)
             }
 
             Spacer(modifier = Modifier.height(7.dp))
@@ -250,11 +259,15 @@ fun ChoreDetailScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp),
                 onClick = {
-                    println(chore)
-                    viewModel.updateChore(chore)
+                    println(choreItem)
+
+                    coroutineScope.launch { sheetState.hide() }
+//                    viewModel.updateChore(chore)
                 }) {
-                Text(text = stringResource(R.string.save_button_text))
+                Text(
+                    text = if (choreItem.id != -1) stringResource(R.string.save_button_text)
+                    else stringResource(R.string.create_button_text)
+                )
             }
         }
-    }
 }

@@ -1,10 +1,13 @@
 package com.example.courseworkcompose.data.repository
 
-import android.util.Log
 import com.example.courseworkcompose.data.api.CleaningAppApiService
 import com.example.courseworkcompose.models.chore.ChoreItem
 import com.example.courseworkcompose.models.chore.Chores
+import com.example.courseworkcompose.models.invite.InviteItem
 import com.example.courseworkcompose.models.room.Rooms
+import com.example.courseworkcompose.models.family.FamilyItem
+import com.example.courseworkcompose.models.invite.Invites
+import com.example.courseworkcompose.models.room.RoomItem
 import com.example.courseworkcompose.models.user.Token
 import com.example.courseworkcompose.models.user.User
 import dagger.hilt.android.scopes.ActivityScoped
@@ -21,7 +24,6 @@ class Repository @Inject constructor(private val cleaningAppApiService: Cleaning
     }
 
     suspend fun getRoomsChores(roomId: Int): Response<Chores> {
-        Log.i("resp", "what a stupid response")
         return cleaningAppApiService.getRoomsChores(roomId)
     }
 
@@ -43,6 +45,16 @@ class Repository @Inject constructor(private val cleaningAppApiService: Cleaning
         return cleaningAppApiService.postChore(postChoreRequestBody)
     }
 
+    suspend fun createRoom(roomItem: RoomItem): Response<RoomItem> {
+        val postRoomRequestBody: RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("name", roomItem.name)
+            .addFormDataPart("color", roomItem.color.toString())
+            .addFormDataPart("family", roomItem.family.toString())
+            .build()
+        return cleaningAppApiService.createRoom(postRoomRequestBody)
+    }
+
     suspend fun updateChore(chore: ChoreItem): Response<ChoreItem> {
         val updateChoreRequestBody: RequestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
@@ -58,6 +70,17 @@ class Repository @Inject constructor(private val cleaningAppApiService: Cleaning
         return cleaningAppApiService.updateChore(chore.id, updateChoreRequestBody)
     }
 
+    suspend fun updateInvite(invite: InviteItem): Response<InviteItem> {
+        val updateInviteRequestBody: RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("id", invite.id.toString())
+            .addFormDataPart("sender", invite.sender.user.id.toString())
+            .addFormDataPart("receiver", invite.receiver.toString())
+            .addFormDataPart("is_accepted", invite.is_accepted.toString())
+            .build()
+        return cleaningAppApiService.updateInvite(invite.id!!, updateInviteRequestBody)
+    }
+
     suspend fun signInUser(username: String, password: String): Response<Token> {
         val signInRequestBody: RequestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
@@ -65,6 +88,10 @@ class Repository @Inject constructor(private val cleaningAppApiService: Cleaning
             .addFormDataPart("password", password)
             .build()
         return cleaningAppApiService.signInUser(signInRequestBody)
+    }
+
+    suspend fun checkUserId(token: String): Response<User> {
+        return cleaningAppApiService.checkUserId("Token $token")
     }
 
     suspend fun registerUser(username: String, password: String, email: String): Response<User> {
@@ -75,5 +102,35 @@ class Repository @Inject constructor(private val cleaningAppApiService: Cleaning
             .addFormDataPart("email", email)
             .build()
         return cleaningAppApiService.registerUser(signUpRequestBody)
+    }
+
+    suspend fun inviteUserToFamily(sender: Int, receiver: String) {
+        val inviteRequestBody: RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("sender", sender.toString())
+            .addFormDataPart("receiver", receiver)
+            .build()
+        println("sender: $sender, receiver: $receiver")
+        return cleaningAppApiService.inviteUserToFamily(inviteRequestBody)
+    }
+
+    suspend fun createFamily(familyName: String): Response<FamilyItem> {
+        val familyRequestBody: RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("name", familyName)
+            .build()
+        return cleaningAppApiService.postFamily(familyRequestBody)
+    }
+
+    suspend fun updateFamily(familyId: Int, familyName: String): Response<FamilyItem> {
+        val familyRequestBody: RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("name", familyName)
+            .build()
+        return cleaningAppApiService.updateFamily(familyId, familyRequestBody)
+    }
+
+    suspend fun getInvites(receiverId: Int): Response<Invites> {
+        return cleaningAppApiService.getInvites(receiverId)
     }
 }

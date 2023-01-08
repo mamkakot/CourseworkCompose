@@ -97,7 +97,7 @@ fun AppBarBottom(navController: NavController) {
         cutoutShape = CircleShape,
         contentPadding = PaddingValues(0.dp)
     ) {
-        val items = listOf("room_list_screen", "calendar_screen", "User", "Settings")
+        val items = listOf("room_list_screen", "calendar_screen", "family_action_screen", "Settings")
         val icons = listOf(
             CustomIcons.HomeIcon,
             CustomIcons.CalendarIcon,
@@ -130,7 +130,7 @@ fun AppBarBottom(navController: NavController) {
                     },
                 )
                 if (index == 1) {
-                    Spacer(modifier = Modifier.width(50.dp))
+                    Spacer(modifier = Modifier.width(70.dp))
                 }
             }
         }

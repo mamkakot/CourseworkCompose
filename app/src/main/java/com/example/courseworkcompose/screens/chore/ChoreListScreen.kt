@@ -9,13 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,41 +20,47 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.courseworkcompose.R
 import com.example.courseworkcompose.models.chore.ChoreItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChoreListScreen(
     roomId: Int,
     roomName: String,
     navController: NavController,
-    setFabOnClick: (() -> Unit) -> Unit,
+    fabOnClick: () -> Unit,
+    setCurrentChore: (ChoreItem) -> Unit,
     viewModel: ChoreViewModel = hiltViewModel()
 ) {
     viewModel.getRoomsChores(roomId)
     val choreList by remember { viewModel.choreList }
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         itemsIndexed(choreList) { _, item ->
-            ChoreCard(chore = item, navController = navController)
+            ChoreCard(chore = item, fabOnClick = fabOnClick, setCurrentChore = setCurrentChore)
         }
     }
 
+
     LaunchedEffect(Unit) {
-        setFabOnClick { println("chore list view") }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChoreCard(chore: ChoreItem, navController: NavController) {
+fun ChoreCard(chore: ChoreItem, fabOnClick: () -> Unit, setCurrentChore: (ChoreItem) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
             .clickable {
-                navController.navigate("chore_detail_screen/${chore.id}/")
+                println(chore)
+                setCurrentChore.invoke(chore.copy(name = chore.name))
+                fabOnClick()
             },
         shape = RoundedCornerShape(10.dp),
         elevation = 12.dp

@@ -1,4 +1,4 @@
-package com.example.courseworkcompose.models.user
+package com.example.courseworkcompose.models.family
 
 data class FamilyItem(
     val id: Int,

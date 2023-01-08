@@ -17,29 +17,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
+import androidx.core.graphics.toColorInt
 import androidx.navigation.NavController
 import com.example.courseworkcompose.R
 import com.example.courseworkcompose.TAG
 import com.example.courseworkcompose.models.room.RoomItem
+import com.example.courseworkcompose.ui.theme.VeryPeri
+import kotlinx.coroutines.CoroutineScope
 
 
 // TODO: сделать изменение порядка перетаскиванием
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun RoomListScreen(navController: NavController, setFabOnClick: (() -> Unit) -> Unit, roomViewModel: RoomViewModel = hiltViewModel()) {
-    roomViewModel.getRooms()
-    val roomList by remember { roomViewModel.roomList }
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(roomList) { _, item ->
-            RoomView(room = item, navController = navController)
+fun RoomListScreen(
+    navController: NavController,
+    roomViewModel: RoomViewModel = hiltViewModel()
+) {
+    val roomList = remember { roomViewModel.roomList }
+    if (roomList.isEmpty()) {
+        Text(
+            modifier = Modifier.fillMaxSize(),
+            textAlign = TextAlign.Center,
+            text = "There are no rooms. Wanna add one?"
+        )
+    } else {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            itemsIndexed(roomList) { _, item ->
+                RoomView(room = item, navController = navController)
+            }
         }
     }
 
     LaunchedEffect(Unit) {
-        setFabOnClick { println("room list view") }
+
     }
 }
 
@@ -67,7 +79,7 @@ fun RoomView(room: RoomItem, navController: NavController) {
                     .padding(end = 15.dp)
                     .size(12.dp),
                     onDraw = {
-                        drawCircle(color = Color.Cyan)//Color(room.color.toColorInt()))
+                        drawCircle(color = if (room.color != null) Color(room.color.toColorInt()) else Color.Cyan)
                     })
                 Column(modifier = Modifier.fillMaxWidth(0.7f)) {
                     Text(text = room.name, style = MaterialTheme.typography.h2)
@@ -92,8 +104,8 @@ fun RoomView(room: RoomItem, navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 7.dp),
-                    progress = room.sum_status / 100f,
-                    color = MaterialTheme.colors.primary
+                    progress = room.sum_status?.div(100f) ?: 0f,
+                    color = VeryPeri,
                 )
             }
         }

@@ -1,7 +1,5 @@
 package com.example.courseworkcompose.models.chore
 
-import androidx.compose.runtime.saveable.mapSaver
-
 data class ChoreItem(
     var date: String,
     var effort: String,
